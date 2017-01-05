@@ -27,6 +27,7 @@ def readData(filename):
                 DLC.append(entry.split()[5])
                 dataBytes.append(entry.split()[6])
                 print dataBytes
+
     print dataBytes
             
 if __name__ == "__main__":
