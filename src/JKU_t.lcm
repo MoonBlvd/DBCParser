@@ -1,0 +1,8 @@
+package JKUlcm;
+
+struct JKU_t
+{
+    int64_t utime;
+    int8_t num_data;
+    double data[num_data];
+}

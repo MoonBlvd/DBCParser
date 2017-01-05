@@ -1,8 +1,0 @@
-package chlcm;
-
-struct channels_t
-{
-    int64_t utime;
-    int8_t num_channels
-    int16_6 channels[num_channels]
-}
