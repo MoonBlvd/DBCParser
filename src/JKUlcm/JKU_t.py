@@ -13,7 +13,7 @@ class JKU_t(object):
     __slots__ = ["utime", "num_data", "data"]
 
     def __init__(self):
-        self.utime = 0
+        self.utime = 0.0
         self.num_data = 0
         self.data = []
 
@@ -24,7 +24,7 @@ class JKU_t(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        buf.write(struct.pack(">qb", self.utime, self.num_data))
+        buf.write(struct.pack(">fh", self.utime, self.num_data))
         buf.write(struct.pack('>%dd' % self.num_data, *self.data[:self.num_data]))
 
     def decode(data):
@@ -39,7 +39,7 @@ class JKU_t(object):
 
     def _decode_one(buf):
         self = JKU_t()
-        self.utime, self.num_data = struct.unpack(">qb", buf.read(9))
+        self.utime, self.num_data = struct.unpack(">fh", buf.read(6))
         self.data = struct.unpack('>%dd' % self.num_data, buf.read(self.num_data * 8))
         return self
     _decode_one = staticmethod(_decode_one)
@@ -47,7 +47,7 @@ class JKU_t(object):
     _hash = None
     def _get_hash_recursive(parents):
         if JKU_t in parents: return 0
-        tmphash = (0x3f822dc0c89997a) & 0xffffffffffffffff
+        tmphash = (0x809b9736b4d78115) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

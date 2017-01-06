@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import csv
+import time
 from datetime import datetime
 
 import lcm
@@ -22,14 +23,18 @@ def dataReader(filename):
                data =  np.vstack((data,line))
             i = i+1
     #print data[:,0]
-    return data, i+1
+    return data
 if __name__ == '__main__':       
     filename = 'exp1_077.csv'
     data = dataReader(filename)
     num_rows, num_cols = data.shape
     msg.num_data = num_cols
     print num_rows, num_cols
+    init_time = time.time()
     for i in range (0,num_rows):
-        msg.utime = datetime.now().time()
-        msg.data =  data[i,:]
+        #tmp_time = datetime.now().time()
+        msg.utime = time.time()-init_time
+        msg.data = np.array(data[i,:], dtype = float)
+        print "Time : ", msg.utime
         lc.publish("JKU_data", msg.encode())
+        time.sleep(0.5)
