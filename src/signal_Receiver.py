@@ -2,25 +2,25 @@ import lcm
 import threading
 import numpy as np
 from JKUlcm import JKU_t
-import pygame, sys
+#import pygame, sys
 #import pygame.locals()
 import time
 
-pygame.init()
+#pygame.init()
 lc = lcm.LCM()
-buf_size = 10
+data_size = 10
 num_data = 805 
 global buf
 buf = np.zeros(num_data)
 global data
-data = np.zeros((buf_size, 805))
+data = np.zeros((data_size, 805))
 
 def data_handler(channel, data):
     msg = JKU_t.decode(data)
     print "Data received time is: ", msg.utime
     print "Received message 1 is: ", msg.data[0]
     global buf
-    buf = msg.data
+    buf = np.vstack([buf, msg.data])
 
 class lcm_thread(threading.Thread):
     def __init__(self,threadID, name):
@@ -32,12 +32,13 @@ class lcm_thread(threading.Thread):
         try:
             while True:
                lc.handle()
-        except KeyboardInterrup:
-            print "killing lcm-thread..."
+        except KeyboardInterrupt:
+            print "KeyboardInterrupted!"
+            thread.exit()
             sys.exit()
             #pass
         lc.unsubscribe(subsription)
-
+'''
 class processing_thread(threading.Thread):
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
@@ -47,8 +48,9 @@ class processing_thread(threading.Thread):
         init_data = buf
         prev_buf = buf
         global buf
+        global data
         while True:
-            tmpData = np.zeros((buf_size, 805))
+            tmpData = np.zeros((data_size, 805))
             i = 0
             #print"Time of buf in processing loop: ", buf[0]
             while i<10:
@@ -58,10 +60,8 @@ class processing_thread(threading.Thread):
                 tmpData[i,:] = buf
                 prev_buf = buf
                 i = i + 1
-            global data
             data = tmpData
             # Compress the  data batch
-            
 
 class compression_thread(threading.Thread):
     def __init__(self, threadID, name):
@@ -70,22 +70,25 @@ class compression_thread(threading.Thread):
         self.name = name
     def run(self):
         global data
-        i = 0
-        while True:
-            if data[1,0] != 0:
-                i = i+1
-                print data
-                if i == 3:
-                    sys.exit()
-
+        j = 0
+        try:
+            while True:
+                for i in range(0, data_size):
+                    j = j+i
+                    data[i,:] = buf[j,:]
+        except KeyboardInterrupt:
+            thread.exit()
+            sys.exit()
+'''
 if __name__ == "__main__":
     lcm_loop = lcm_thread(1, "lcm_thread")
-    processing_loop = processing_thread(2, "processing_thread")
-    compression = compression_thread(3,"compression_thread")
+    #processing_loop = processing_thread(2, "processing_thread")
+    #compression = compression_thread(3,"compression_thread")
     
     lcm_loop.start()
-    processing_loop.start()
-    compression.start()
+    #processing_loop.start()
+    #compression.start()
+
 '''
     try:
         while True:
@@ -107,5 +110,4 @@ if __name__ == "__main__":
                 print "Quit now..."
                 pygame.quit()
                 sys.exit()
-
 '''
