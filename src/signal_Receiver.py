@@ -108,7 +108,8 @@ class compression_thread(threading.Thread):
                     print "buf is: ", buf[i]
                     tmp = compressor.compress(buf[i])
                     compressed_data.append(tmp)
-                    print size + len(tmp)
+                    size += len(tmp)
+                    print size
                     i += 1
         except KeyboardInterrupt:
             sys.exit()
@@ -117,10 +118,14 @@ if __name__ == "__main__":
     lcm_loop = lcm_thread(1, "lcm_thread")
     #processing_loop = processing_thread(2, "processing_thread")
     compression = compression_thread(3,"compression_thread")
-    
+    lcm_loop.daemon = True
+    compression.daemon = True
+
     lcm_loop.start()
     #processing_loop.start()
     compression.start()
+    while True:
+        continue
 
 '''
     try:
