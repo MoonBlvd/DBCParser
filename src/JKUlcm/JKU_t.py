@@ -10,12 +10,12 @@ except ImportError:
 import struct
 
 class JKU_t(object):
-    __slots__ = ["utime", "num_data", "data"]
+    __slots__ = ["utime", "num_data", "str_data"]
 
     def __init__(self):
         self.utime = 0.0
         self.num_data = 0
-        self.data = []
+        self.str_data = ""
 
     def encode(self):
         buf = BytesIO()
@@ -25,7 +25,10 @@ class JKU_t(object):
 
     def _encode_one(self, buf):
         buf.write(struct.pack(">fh", self.utime, self.num_data))
-        buf.write(struct.pack('>%dd' % self.num_data, *self.data[:self.num_data]))
+        __str_data_encoded = self.str_data.encode('utf-8')
+        buf.write(struct.pack('>I', len(__str_data_encoded)+1))
+        buf.write(__str_data_encoded)
+        buf.write(b"\0")
 
     def decode(data):
         if hasattr(data, 'read'):
@@ -40,14 +43,15 @@ class JKU_t(object):
     def _decode_one(buf):
         self = JKU_t()
         self.utime, self.num_data = struct.unpack(">fh", buf.read(6))
-        self.data = struct.unpack('>%dd' % self.num_data, buf.read(self.num_data * 8))
+        __str_data_len = struct.unpack('>I', buf.read(4))[0]
+        self.str_data = buf.read(__str_data_len)[:-1].decode('utf-8', 'replace')
         return self
     _decode_one = staticmethod(_decode_one)
 
     _hash = None
     def _get_hash_recursive(parents):
         if JKU_t in parents: return 0
-        tmphash = (0x809b9736b4d78115) & 0xffffffffffffffff
+        tmphash = (0xc40ae1a64da97df0) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

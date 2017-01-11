@@ -4,5 +4,6 @@ struct JKU_t
 {
     float  utime;
     int16_t num_data;
-    double data[num_data];
+    //double data[num_data];
+    string str_data;
 }

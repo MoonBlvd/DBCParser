@@ -6,21 +6,36 @@ from JKUlcm import JKU_t
 #import pygame.locals()
 import time
 
+from compress import lz77_compressor
+
 #pygame.init()
 lc = lcm.LCM()
+
+# parameters and buffers for double type data reading
+
 data_size = 10
 num_data = 805 
+#global buf
+#buf = np.zeros(num_data)
+#global data
+#data = np.zeros((data_size, 805))
+
+# buffer and parameters for string type data reading
 global buf
-buf = np.zeros(num_data)
-global data
-data = np.zeros((data_size, 805))
+buf = []
+global compressed_data
+window_size = 20
+compressor = lz77_compressor(window_size)
 
 def data_handler(channel, data):
     msg = JKU_t.decode(data)
     print "Data received time is: ", msg.utime
-    print "Received message 1 is: ", msg.data[0]
+    #print "Received message 1 is: ", msg.data[0]
+    print "Received message 1 is: ", msg.str_data
     global buf
-    buf = np.vstack([buf, msg.data])
+    #buf = np.vstack([buf, msg.data])
+    buf.append(str(msg.str_data))
+    print "type of buf is: ", type(buf[0])
 
 class lcm_thread(threading.Thread):
     def __init__(self,threadID, name):
@@ -62,13 +77,14 @@ class processing_thread(threading.Thread):
                 i = i + 1
             data = tmpData
             # Compress the  data batch
-
+'''
 class compression_thread(threading.Thread):
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
     def run(self):
+        '''
         global data
         j = 0
         try:
@@ -79,15 +95,32 @@ class compression_thread(threading.Thread):
         except KeyboardInterrupt:
             thread.exit()
             sys.exit()
-'''
+        '''
+        # string data compression
+        global buf
+        global compressed_data
+        compressed_data = []
+        i = 0
+        size = 0
+        try: 
+            while True:
+                if i < len(buf):
+                    print "buf is: ", buf[i]
+                    tmp = compressor.compress(buf[i])
+                    compressed_data.append(tmp)
+                    print size + len(tmp)
+                    i += 1
+        except KeyboardInterrupt:
+            sys.exit()
+
 if __name__ == "__main__":
     lcm_loop = lcm_thread(1, "lcm_thread")
     #processing_loop = processing_thread(2, "processing_thread")
-    #compression = compression_thread(3,"compression_thread")
+    compression = compression_thread(3,"compression_thread")
     
     lcm_loop.start()
     #processing_loop.start()
-    #compression.start()
+    compression.start()
 
 '''
     try:
