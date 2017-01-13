@@ -26,9 +26,27 @@ def csvReader(filename):
     return data
 
 def logReader(filename):
+    i = 0
     with open('../data/Data_01032017/' + filename, 'r') as file:
         f = file.readlines()
-    return f
+    for line in f:
+        length = len(line)
+        tmpData = ''
+        for j in range (0, length):
+            if j == 21: # save the canID
+                tmpID = line[21:24]
+                j += 5
+            if j == 27:
+                tmpDataDigits = line[27]
+            if j >=29: # save the data bytes
+                if line[j] != ' ' and line[j] != '\n':
+                    tmpData += line[j]
+        if i == 0:
+            data = [tmpID + tmpDataDigits + tmpData]
+        else:
+            data.append(tmpID + tmpDataDigits + tmpData)
+        i += 1
+    return data
 
 if __name__ == '__main__':       
     # code for reading and publishing double type data

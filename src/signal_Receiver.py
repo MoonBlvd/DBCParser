@@ -35,7 +35,6 @@ def data_handler(channel, data):
     global buf
     #buf = np.vstack([buf, msg.data])
     buf.append(str(msg.str_data))
-    print "type of buf is: ", type(buf[0])
 
 class lcm_thread(threading.Thread):
     def __init__(self,threadID, name):
@@ -98,10 +97,28 @@ class compression_thread(threading.Thread):
         '''
         # string data compression
         global buf
-        global compressed_data
+        global compressed_daa
         compressed_data = []
         i = 0
         size = 0
+
+        # compress batch by batch
+        batch_size = 20
+        try: 
+            while True:
+                if (i+1) * batch_size <= len(buf):
+                    batch = "".join(buf[i*batch_size:(i+1)*batch_size])
+                    print "batch is: ", batch
+                    tmp = compressor.compress(batch)
+                    compressed_data.append(tmp)
+                    print "compressed batch is: ", tmp
+                    size += len(tmp)
+                    print size
+                    i += 1
+        except KeyboardInterrupt:
+            sys.exit()
+        ''' 
+        # compress line by line
         try: 
             while True:
                 if i < len(buf):
@@ -111,8 +128,8 @@ class compression_thread(threading.Thread):
                     size += len(tmp)
                     print size
                     i += 1
-        except KeyboardInterrupt:
-            sys.exit()
+        '''
+
 
 if __name__ == "__main__":
     lcm_loop = lcm_thread(1, "lcm_thread")
