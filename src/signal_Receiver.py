@@ -30,11 +30,14 @@ compressor = lz77_compressor(window_size)
 def data_handler(channel, data):
     msg = JKU_t.decode(data)
     print "Data received time is: ", msg.utime
-    #print "Received message 1 is: ", msg.data[0]
-    print "Received message 1 is: ", msg.str_data
+    #print "Received message type is: ", type(msg.str_data)
+    #print "Received message is: ", msg.str_data
+    binData = bin(int(msg.str_data, base = 16))[2:]
+    print "Received message in binary is: ", binData
     global buf
     #buf = np.vstack([buf, msg.data])
-    buf.append(str(msg.str_data))
+    #buf.append(str(msg.str_data))
+    buf.append(binData)
 
 class lcm_thread(threading.Thread):
     def __init__(self,threadID, name):
@@ -97,7 +100,7 @@ class compression_thread(threading.Thread):
         '''
         # string data compression
         global buf
-        global compressed_daa
+        global compressed_data
         compressed_data = []
         i = 0
         size = 0
@@ -108,7 +111,7 @@ class compression_thread(threading.Thread):
             while True:
                 if (i+1) * batch_size <= len(buf):
                     batch = "".join(buf[i*batch_size:(i+1)*batch_size])
-                    print "batch is: ", batch
+                    print "binary batch is: ", batch
                     tmp = compressor.compress(batch)
                     compressed_data.append(tmp)
                     print "compressed batch is: ", tmp

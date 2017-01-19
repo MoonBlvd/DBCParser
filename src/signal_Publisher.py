@@ -37,7 +37,7 @@ def logReader(filename):
                 tmpID = line[21:24]
                 j += 5
             if j == 27:
-                tmpDataDigits = line[27]
+                tmpDataDigits = str(int(line[27])-1)
             if j >=29: # save the data bytes
                 if line[j] != ' ' and line[j] != '\n':
                     tmpData += line[j]
