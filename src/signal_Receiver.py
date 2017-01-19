@@ -2,7 +2,7 @@ import lcm
 import threading
 import numpy as np
 from JKUlcm import JKU_t
-#import pygame, sys
+import sys
 #import pygame.locals()
 import time
 
@@ -31,8 +31,10 @@ def data_handler(channel, data):
     msg = JKU_t.decode(data)
     print "Data received time is: ", msg.utime
     #print "Received message type is: ", type(msg.str_data)
-    #print "Received message is: ", msg.str_data
-    binData = bin(int(msg.str_data, base = 16))[2:]
+    print "Received message is: ", msg.str_data
+    msgLength = (len(msg.str_data)-1) * 4
+    print "length is : ", msgLength
+    binData = format(int(msg.str_data, base = 16),'0'+str(msgLength)+'b')
     print "Received message in binary is: ", binData
     global buf
     #buf = np.vstack([buf, msg.data])
@@ -103,20 +105,26 @@ class compression_thread(threading.Thread):
         global compressed_data
         compressed_data = []
         i = 0
-        size = 0
+        sizeCompressed = 0
+        sizeOriginal = 0
 
         # compress batch by batch
-        batch_size = 20
+        batch_size = 10000
         try: 
             while True:
                 if (i+1) * batch_size <= len(buf):
                     batch = "".join(buf[i*batch_size:(i+1)*batch_size])
-                    print "binary batch is: ", batch
+                    #print "binary batch is: ", batch
                     tmp = compressor.compress(batch)
+                    start = time.time()
                     compressed_data.append(tmp)
-                    print "compressed batch is: ", tmp
-                    size += len(tmp)
-                    print size
+                    elapsed = time.time()-start
+                    print "Compressing time is: ", elapsed
+                    #print "compressed batch is: ", tmp
+                    sizeOriginal += len(batch)
+                    sizeCompressed += len(tmp)
+                    print "Original batch size in bits is: ", sizeOriginal
+                    print "Compressed batch size in bits is: ", sizeCompressed
                     i += 1
         except KeyboardInterrupt:
             sys.exit()

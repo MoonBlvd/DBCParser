@@ -67,12 +67,14 @@ if __name__ == '__main__':
     init_time = time.time()
     i = 0
     #for i in range (0,num_rows):
-    while data[i]:
+    #while data[i]:
+    while i <= 10000:
         msg.utime = time.time()-init_time
         #msg.data = np.array(data[i,:], dtype = float)
         msg.str_data = data[i]
         print "Time : ", msg.utime
         print "data: ", msg.str_data
         lc.publish("JKU_data", msg.encode())
-        time.sleep(0.5)
+        time.sleep(0.1)
         i += 1
+    
