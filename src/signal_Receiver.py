@@ -7,6 +7,7 @@ import sys
 import time
 
 from compress import lz77_compressor
+from DBCParser import DBCParser
 
 #pygame.init()
 lc = lcm.LCM()
@@ -22,25 +23,45 @@ num_data = 805
 
 # buffer and parameters for string type data reading
 global buf
-buf = []
 global compressed_data
+global binaryData # for translating
+global msgID # for translating
+global currTime
+binaryData = None
+msgID = None
+currTime = 0
+buf = []
 window_size = 20
 compressor = lz77_compressor(window_size)
 
 def data_handler(channel, data):
     msg = JKU_t.decode(data)
-    print "Data received time is: ", msg.utime
+    #print "Data received time is: ", msg.utime
     #print "Received message type is: ", type(msg.str_data)
-    print "Received message is: ", msg.str_data
+    #print "Received message is: ", msg.str_data
     msgLength = (len(msg.str_data)-1) * 4
-    print "length is : ", msgLength
+    #print "length is : ", msgLength
     binData = format(int(msg.str_data, base = 16),'0'+str(msgLength)+'b')
-    print "Received message in binary is: ", binData
-    global buf
+    #print "Received message in binary is: ", binData
+    global buf # contains ID and binary Data
     #buf = np.vstack([buf, msg.data])
     #buf.append(str(msg.str_data))
     buf.append(binData)
+    global currTime
+    currTime = msg.utime
+    global msgID
+    global binaryData
+    msgID, binaryData = str2binary(msg.str_data)
 
+def str2binary(str_data):
+    msgID = int(str_data[0:3], 16) # decimal msg ID
+    dataLength = len(str_data[3:]) * 4
+    binaryStr = format(int(str_data[3:], 16), '0'+str(dataLength)+'b')
+    binaryData = np.zeros([dataLength/8,8], dtype = str)
+    for i in range (0,dataLength/8):
+        for j in range (0, 8):
+            binaryData[i][j] = binaryStr[i*8 + j]
+    return msgID, binaryData
 class lcm_thread(threading.Thread):
     def __init__(self,threadID, name):
         threading.Thread.__init__(self)
@@ -57,31 +78,31 @@ class lcm_thread(threading.Thread):
             sys.exit()
             #pass
         lc.unsubscribe(subsription)
-'''
-class processing_thread(threading.Thread):
-    def __init__(self, threadID, name):
+
+class translating_thread(threading.Thread):
+    def __init__(self, threadID, name, msgList):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
+        self.msgList = msgList
     def run(self):
-        init_data = buf
-        prev_buf = buf
-        global buf
-        global data
-        while True:
-            tmpData = np.zeros((data_size, 805))
-            i = 0
-            #print"Time of buf in processing loop: ", buf[0]
-            while i<10:
-                if buf[0] == prev_buf[0]:
+        global currTime
+        global msgID
+        global binaryData
+        prevData = None
+        try:
+            while True:
+                if np.array_equal(binaryData, prevData): #check if new data comes
                     continue
-                #print"Time of buf in processing loop: ", buf[0]
-                tmpData[i,:] = buf
-                prev_buf = buf
-                i = i + 1
-            data = tmpData
-            # Compress the  data batch
-'''
+                for i in range (0, len(msgList)):
+                    if msgID == msgList[i].decIdx:
+                        decData = msgList[i].convert(binaryData) # translate the binary Data to decimal values
+                        print "Data reveived time is: ", currTime
+                        print decData
+                prevData = binaryData
+        except KeyboardInterrupt:
+            sys.exit()
+
 class compression_thread(threading.Thread):
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
@@ -143,15 +164,23 @@ class compression_thread(threading.Thread):
 
 
 if __name__ == "__main__":
+    # read and parse DBC file, obtain the message list
+    DBCFileName = "../data/Honda_2010.dbc"
+    dbc = DBCParser(DBCFileName)
+    msgList = dbc.parse()
+    # print msgList[0].signalDict['GearDMU'].length
+    print "DBC file is parsed!"
+
     lcm_loop = lcm_thread(1, "lcm_thread")
-    #processing_loop = processing_thread(2, "processing_thread")
-    compression = compression_thread(3,"compression_thread")
+    translating_loop = translating_thread(2, "translating_thread", msgList)
+    #compression = compression_thread(3, "compression_thread")
     lcm_loop.daemon = True
-    compression.daemon = True
+    #compression.daemon = True
+    translating_loop.daemon = True
 
     lcm_loop.start()
-    #processing_loop.start()
-    compression.start()
+    translating_loop.start()
+    #compression.start()
     while True:
         continue
 

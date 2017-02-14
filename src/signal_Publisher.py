@@ -36,15 +36,15 @@ def logReader(filename):
             if j == 21: # save the canID
                 tmpID = line[21:24]
                 j += 5
-            if j == 27:
+            if j == 27: # save the message size
                 tmpDataDigits = str(int(line[27])-1)
             if j >=29: # save the data bytes
                 if line[j] != ' ' and line[j] != '\n':
                     tmpData += line[j]
         if i == 0:
-            data = [tmpID + tmpDataDigits + tmpData]
+            data = [tmpID + tmpData]
         else:
-            data.append(tmpID + tmpDataDigits + tmpData)
+            data.append(tmpID + tmpData)
         i += 1
     return data
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     # code for reading and publishing string type data
 
-    filename = 'data1.log'
+    filename = 'dirtRoad1.log'
     data = logReader(filename)
     msg.num_data = 1
     
