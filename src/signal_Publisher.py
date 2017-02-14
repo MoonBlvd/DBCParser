@@ -68,7 +68,7 @@ if __name__ == '__main__':
     i = 0
     #for i in range (0,num_rows):
     #while data[i]:
-    while i <= 10000:
+    while i <= 200000:
         msg.utime = time.time()-init_time
         #msg.data = np.array(data[i,:], dtype = float)
         msg.str_data = data[i]
