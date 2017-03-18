@@ -71,6 +71,8 @@ class DBCMsgSignal():
             row = self.startBit / 8
             col = self.startBit - row * 8
             for idx in range(self.length):
+                print "binaryData is: ", binaryData
+                print "row and col is:", [row, col]
                 binaryRet += binaryData[row][col]
                 if col == 7:
                     col = 0
@@ -78,6 +80,22 @@ class DBCMsgSignal():
                 else:
                     col += 1
             return binaryRet[::-1] #return MSB->LSB
+        elif self.byteOrder == 'Motorola':
+            binaryData = binaryData[:,::-1]
+            row = self.startBit / 8
+            col = self.startBit - row * 8
+            for idx in range(self.length):
+                print "binaryData size is: ", binaryData.shape
+                print "row and col is:", [row, col]
+                binaryRet += binaryData[row][col]
+
+                if col == 0:
+                    col = 7
+                    row += 1
+                else:
+                    col -= 1
+            return binaryRet #return MSB -> LSB
+        '''
         elif self.byteOrder == 'Motorola':
             row = self.startBit / 8
             col = self.startBit - row * 8
@@ -89,6 +107,7 @@ class DBCMsgSignal():
                 else:
                     col -= 1
             return binaryRet #return MSB -> LSB
+            '''
     @staticmethod
     def twosComplement(val, bits):  # positive and negative
     # compute the 2's compliment of int value val
