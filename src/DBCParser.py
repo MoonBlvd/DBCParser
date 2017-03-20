@@ -13,7 +13,7 @@ class DBCParser():
         msgList = []
         while idx < len(self.lines):
             line = self.lines[idx]
-            if len(line) > 1 and idx >1:
+            if len(line) > 1: #and idx >1:
                 if line.startswith("BO_ "):
                     idx, msg = self.parseOneMsg(idx) # start to parse a messgae
                     msgList.append(msg)

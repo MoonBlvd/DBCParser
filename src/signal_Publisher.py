@@ -27,24 +27,26 @@ def csvReader(filename):
 
 def logReader(filename):
     i = 0
-    with open('../data/Data_01032017/' + filename, 'r') as file:
+    with open('../data/Data_03092017/' + filename, 'r') as file:
         f = file.readlines()
     for line in f:
         length = len(line)
         tmpData = ''
         for j in range (0, length):
+            if j == 0:
+                tmpTime = line[0:13]
             if j == 21: # save the canID
                 tmpID = line[21:24]
-                j += 5
+                #j += 5
             if j == 27: # save the message size
                 tmpDataDigits = str(int(line[27])-1)
-            if j >=29: # save the data bytes
+            if j >= 29: # save the data bytes
                 if line[j] != ' ' and line[j] != '\n':
                     tmpData += line[j]
         if i == 0:
-            data = [tmpID + tmpData]
+            data = [tmpTime + tmpID + tmpData]
         else:
-            data.append(tmpID + tmpData)
+            data.append(tmpTime + tmpID + tmpData)
         i += 1
     return data
 
@@ -59,7 +61,7 @@ if __name__ == '__main__':
 
     # code for reading and publishing string type data
 
-    filename = 'dirtRoad1.log'
+    filename = 'AroundAnnArbor_CAN_1_Mobileye_2.log'
     data = logReader(filename)
     msg.num_data = 1
     
@@ -68,13 +70,13 @@ if __name__ == '__main__':
     i = 0
     #for i in range (0,num_rows):
     #while data[i]:
-    while i <= 200000:
+    while data[i]:
         msg.utime = time.time()-init_time
         #msg.data = np.array(data[i,:], dtype = float)
         msg.str_data = data[i]
-        print "Time : ", msg.utime
+        print "Time : ", msg.str_data[0:13]
         print "data: ", msg.str_data
         lc.publish("JKU_data", msg.encode())
-        time.sleep(0.1)
+        time.sleep(1)
         i += 1
     

@@ -23,53 +23,48 @@ num_data = 805
 #data = np.zeros((data_size, 805))
 
 # buffer and parameters for string type data reading
-global data_buf
-global time_buf
-global ID_buf
+global buf
 global compressed_data
-data_buf = []
-time_buf = []
-ID_buf = []
+global binaryData # for translating
+global msgID # for translating
+global currTime
+binaryData = None
+msgID = None
+currTime = None
+buf = []
 window_size = 20
 compressor = lz77_compressor(window_size)
 
 def data_handler(channel, data):
     msg = JKU_t.decode(data)
-    #tic = time.clock()
+    #print "Data received time is: ", msg.utime
+    #print "Received message type is: ", type(msg.str_data)
+    #print "Received message is: ", msg.str_data
+    msgLength = (len(msg.str_data[13:])-1) * 4 # first 12 chars are Time
+    #print "length is : ", msgLength
+    binData = format(int(msg.str_data[13:], base = 16),'0'+str(msgLength)+'b')
+    #print "Received message in binary is: ", binData
+    global buf # contains ID and binary Data
+    #buf = np.vstack([buf, msg.data])
+    #buf.append(str(msg.str_data))
+    buf.append(binData)
+    global currTime
     currTime = msg.str_data[0:13]
     pt = datetime.strptime(currTime, '%H:%M:%S:%f')
     currTime = pt.microsecond*10e-7 + pt.second + pt.minute*60 + pt.hour*3600
+    global msgID
+    global binaryData
     msgID, binaryData = str2binary(msg.str_data)
-    global data_buf # contains inary Data
-    global time_buf
-    global ID_buf
-    data_buf.append(binaryData)
-    time_buf.append(currTime)
-    ID_buf.append(msgID)
-    #toc = time.clock()
-    #print toc-tic
 
 def str2binary(str_data):
     msgID = int(str_data[13:16], 16) # decimal msg ID
-
     dataLength = (len(str_data[16:])-1) * 4
     binaryStr = format(int(str_data[16:], 16), '0'+str(dataLength)+'b')
     binaryData = np.ones([dataLength/8,8], dtype = str)
     for i in range (0,dataLength/8):
         for j in range (0, 8):
             binaryData[i][j] = binaryStr[i*8 + j]
-#    if msgID == 804:
-#        print "the temperature raw data is: ", str_data[16:]
-#        print "the binary string of temperature:, ", binaryStr
-#        print "the binary version of the temperature is: ", binaryData
-#        print "datalength: ",dataLength 
-#    if msgID == 476:
-#        print "the engine speed2 raw data is: ", str_data[16:]
-#        print "the binary string of engine speed2:, ", binaryStr
-#        print "the binary version of the engine speed is: ", binaryData
-#        print "datalength: ",dataLength 
     return msgID, binaryData
-
 class lcm_thread(threading.Thread):
     def __init__(self,threadID, name):
         threading.Thread.__init__(self)
@@ -94,47 +89,55 @@ class translating_thread(threading.Thread):
         self.name = name
         self.msgList = msgList
     def run(self):
-        global data_buf
-        global time_buf
-        global ID_buf
+        global currTime
+        global msgID
+        global binaryData
 
-        prev_data = None
-        j = 0
+        prevData = None
         try:
             FILE = open('translated_data.txt', 'w')
             while True:
-                #print "data_buf is: ", data_buf  
-                if j >= len(data_buf): #check if new data comes
+                if np.array_equal(binaryData, prevData): #check if new data comes
                     continue
-                else:
-                    if np.array_equal(data_buf[j], prev_data): # check if new data comes
-                        continue
-                    else:
-                        for i in range (0, len(self.msgList)):
-                            if ID_buf[j] == self.msgList[i].decIdx:
-                                decData = self.msgList[i].convert(data_buf[j]) # translate the binary Data to decimal values
-                                #print decData
-                                #if ID_buf[j] == 804:
-                                #    print "Data reveived time is: ", time_buf[j]
-                                #    print "Data ID is: ", ID_buf[j]
-                                #    print "binary data is: ", data_buf[j]
-                                #    some = data_buf[j]
-                                #    print "binary data inverse is: ", some[:,::-1]
-                                #    print decData
-                                FILE.write(str(time_buf[j]) + '    ')
-                                FILE.write(str(decData))
-                                FILE.write('\n')
-                        prevData = data_buf[j]
-                        j += 1
+                tic = time.time()
+                for i in range (0, len(msgList)):
+                    if msgID == msgList[i].decIdx:
+                        print "msgID outside is: ", msgID
+                        print "msgList ID outside is: ", msgList[i].decIdx
+                        decData = msgList[i].convert(binaryData, msgID) # translate the binary Data to decimal values
+                        #print "Data reveived time is: ", currTime
+                        #print decData
+                        #if msgID == 464:
+                        #    print "Data reveived time is: ", currTime
+                        #    print "binary data is: ", binaryData
+                        #    print decData
+                        FILE.write(str(currTime) + '    ')
+                        FILE.write(str(decData))
+                        FILE.write('\n')
+                prevData = binaryData
+                toc = time.time()
+                print "Time is ", toc-tic
         except KeyboardInterrupt:
             sys.exit()
-'''
+
 class compression_thread(threading.Thread):
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
     def run(self):
+        '''
+        global data
+        j = 0
+        try:
+            while True:
+                for i in range(0, data_size):
+                    j = j+i
+                    data[i,:] = buf[j,:]
+        except KeyboardInterrupt:
+            thread.exit()
+            sys.exit()
+        '''
         # string data compression
         global buf
         global compressed_data
@@ -144,7 +147,7 @@ class compression_thread(threading.Thread):
         sizeOriginal = 0
 
         # compress batch by batch
-        batch_size = 200000
+        batch_size = 10000
         try: 
             while True:
                 if (i+1) * batch_size <= len(buf):
@@ -163,7 +166,19 @@ class compression_thread(threading.Thread):
                     i += 1
         except KeyboardInterrupt:
             sys.exit()
-'''
+        ''' 
+        # compress line by line
+        try: 
+            while True:
+                if i < len(buf):
+                    print "buf is: ", buf[i]
+                    tmp = compressor.compress(buf[i])
+                    compressed_data.append(tmp)
+                    size += len(tmp)
+                    print size
+                    i += 1
+        '''
+
 
 if __name__ == "__main__":
     # read and parse DBC file, obtain the message list
