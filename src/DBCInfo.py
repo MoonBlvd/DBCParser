@@ -19,6 +19,7 @@ class DBCMsg():
             print "DBCMsg addSignal: duplicated message name!"
         self.signalDict[signal.signalName] = signal
 
+    #Add time to the dictionary
     def convert(self, binaryData):
         ret = {}
         for signalName, signal in self.signalDict.items():
@@ -61,18 +62,24 @@ class DBCMsgSignal():
 
     def extractValue(self, binaryData):
         if self.isSigned: # shift to [-127, 128]if the signal is signed
-            val = DBCMsgSignal.twosComplement(int(binaryData,2), len(binaryData))
+            #val = DBCMsgSignal.twosComplement(int(binaryData,2), len(binaryData))
+            val = DBCMsgSignal.twosComplement(binaryData, len(binaryData))
         else:
             val = int(binaryData, 2)
-        return val*self.factor + self.offset # compute the real decimal value of the signal
+        val = val*self.factor + self.offset
+        if val > self.maximum:
+            val = self.maximum
+        elif val < self.minimum:
+            val = self.minimum
+        return val # compute the real decimal value of the signal
     def extractFieldBinary(self, binaryData):
         binaryRet = ''
         if self.byteOrder == 'Intel' :
             row = self.startBit / 8
             col = self.startBit - row * 8
             for idx in range(self.length):
-                print "binaryData is: ", binaryData
-                print "row and col is:", [row, col]
+                #print "binaryData is: ", binaryData
+                #print "row and col is:", [row, col]
                 binaryRet += binaryData[row][col]
                 if col == 7:
                     col = 0
@@ -85,8 +92,8 @@ class DBCMsgSignal():
             row = self.startBit / 8
             col = self.startBit - row * 8
             for idx in range(self.length):
-                print "binaryData size is: ", binaryData.shape
-                print "row and col is:", [row, col]
+                #print "binaryData size is: ", binaryData.shape
+                #print "row and col is:", [row, col]
                 binaryRet += binaryData[row][col]
 
                 if col == 0:
@@ -111,6 +118,13 @@ class DBCMsgSignal():
     @staticmethod
     def twosComplement(val, bits):  # positive and negative
     # compute the 2's compliment of int value val
-        if (val & (1 << (bits - 1))) != 0:  # if sign bit is set e.g., 8bit: 128-255
-            val -= (1 << bits)  # compute negative value
-        return val
+        if bits > 1:
+            value = int(val[1:],2)
+            if val[0]=='1':
+                value *= -1
+        else:
+            value = int(val,2)
+        return value
+    #    if (val & (1 << (bits - 1))) != 0:  # if sign bit is set e.g., 8bit: 128-255
+    #        val -= (1 << bits)  # compute negative value
+    #    return val
