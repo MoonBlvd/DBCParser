@@ -99,9 +99,12 @@ class translating_thread(threading.Thread):
             while True:
                 if np.array_equal(binaryData, prevData): #check if new data comes
                     continue
+                tic = time.time()
                 for i in range (0, len(msgList)):
                     if msgID == msgList[i].decIdx:
-                        decData = msgList[i].convert(binaryData) # translate the binary Data to decimal values
+                        print "msgID outside is: ", msgID
+                        print "msgList ID outside is: ", msgList[i].decIdx
+                        decData = msgList[i].convert(binaryData, msgID) # translate the binary Data to decimal values
                         #print "Data reveived time is: ", currTime
                         #print decData
                         #if msgID == 464:
@@ -112,6 +115,8 @@ class translating_thread(threading.Thread):
                         FILE.write(str(decData))
                         FILE.write('\n')
                 prevData = binaryData
+                toc = time.time()
+                print "Time is ", toc-tic
         except KeyboardInterrupt:
             sys.exit()
 

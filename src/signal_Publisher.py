@@ -77,6 +77,6 @@ if __name__ == '__main__':
         print "Time : ", msg.str_data[0:13]
         print "data: ", msg.str_data
         lc.publish("JKU_data", msg.encode())
-        time.sleep(0.05)
+        time.sleep(1)
         i += 1
     

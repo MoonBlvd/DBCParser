@@ -144,7 +144,7 @@ class compression_thread(threading.Thread):
         sizeOriginal = 0
 
         # compress batch by batch
-        batch_size = 10000
+        batch_size = 200000
         try: 
             while True:
                 if (i+1) * batch_size <= len(buf):
