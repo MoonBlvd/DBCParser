@@ -5,7 +5,7 @@ import time
 import cPickle as pkl
 
 from DBCParser import DBCParser
-
+'''
 def csvReader(filename):
     i = 0
     with open('../data/'+filename, 'r') as file:
@@ -20,17 +20,20 @@ def csvReader(filename):
             i = i+1
     #print data[:,0]
     return data
-
-def logReader(filename):
+'''
+def logReader(filedir, filename):
     i = 0
-    with open('../data/Data_03092017/' + filename, 'r') as file:
+    with open(filedir + filename, 'r') as file:
         f = file.readlines()
+    init_flag = 0;
     for line in f:
         length = len(line)
         tmpData = ''
         for j in range (0, length):
             if j == 0:
                 tmpTime = line[0:13]
+            if j == 17:
+                tmpCH = line[17]
             if j == 21: # save the canID
                 tmpID = line[21:24]
                 #j += 5
@@ -39,10 +42,14 @@ def logReader(filename):
             if j >= 29: # save the data bytes
                 if line[j] != ' ' and line[j] != '\n':
                     tmpData += line[j]
-        if i == 0:
-            data = [tmpTime + tmpID + tmpData]
+        # only translate one channel
+        if init_flag == 0:
+            if tmpCH == '2':
+                data = [tmpTime + tmpID + tmpData]
+                init_flag = 1;
         else:
-            data.append(tmpTime + tmpID + tmpData)
+            if tmpCH == '2':
+                data.append(tmpTime + tmpID + tmpData)
         i += 1
     return data
 
@@ -62,7 +69,8 @@ def translate(msgID, binaryData, currTime, msgList, FILE):
         if msgID == msgList[i].decIdx:
             decData = msgList[i].convert(binaryData) # translate the binary Data to decimal values
             decData['Time'] = currTime
-            #FILE.write(str(currTime) + '    ')
+            decData['msgID'] = msgID
+            FILE.write(str(msgID) + '    ')
             FILE.write(str(decData))
             FILE.write('\n')
             #pkl.dump(decData, DICT)
@@ -72,17 +80,21 @@ def translate(msgID, binaryData, currTime, msgList, FILE):
 
 if __name__ == '__main__':  
 	# code for reading and publishing string type data
-    filename = 'AroundAnnArbor_CAN_1_Mobileye_2.log'
-    data = logReader(filename)
+    #filename = 'AroundAnnArbor_CAN_1_Mobileye_2.log'
+    trajectory_name = sys.argv[1]
+    filename = 'BUSMASTER_'+ trajectory_name+ '.log'
+    filedir = '../data/Data_06192017/'
+    target_dir = '../translated_data/06192017/'
+    data = logReader(filedir,filename)
 
     # read and parse DBC file, obtain the message list
     DBCFileName = "../data/Mobileye_Honda_Accord_2013.dbc"
     dbc = DBCParser(DBCFileName)
-    msgList = dbc.parse()
+    msgList, msgIDList = dbc.parse()
     print "DBC file is parsed!"
 
     #start translate
-    FILE = open('translated_data.txt', 'w')
+    FILE = open(target_dir + trajectory_name + '.txt', 'w')
     #FILE = 1
     DICTs = []
     maxNum = len(data)
@@ -98,4 +110,4 @@ if __name__ == '__main__':
         if tmpData != None:
             DICTs.append(tmpData)
         i += 1
-    pkl.dump(DICTs,open( "translated_dict.pkl", "wb" ))
+    pkl.dump(DICTs,open( target_dir + trajectory_name + '.pkl', "wb" ))

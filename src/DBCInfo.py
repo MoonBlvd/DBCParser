@@ -18,6 +18,7 @@ class DBCMsg():
         if signal.signalName in self.signalDict:
             print "DBCMsg addSignal: duplicated message name!"
         self.signalDict[signal.signalName] = signal
+        return self.decIdx
 
     #Add time to the dictionary
     def convert(self, binaryData):
@@ -62,8 +63,8 @@ class DBCMsgSignal():
 
     def extractValue(self, binaryData):
         if self.isSigned: # shift to [-127, 128]if the signal is signed
-            #val = DBCMsgSignal.twosComplement(int(binaryData,2), len(binaryData))
-            val = DBCMsgSignal.twosComplement(binaryData, len(binaryData))
+            val = DBCMsgSignal.twosComplement(int(binaryData,2), len(binaryData))
+            #val = DBCMsgSignal.twosComplement(binaryData, len(binaryData))
         else:
             val = int(binaryData, 2)
         val = val*self.factor + self.offset
@@ -74,7 +75,8 @@ class DBCMsgSignal():
         return val # compute the real decimal value of the signal
     def extractFieldBinary(self, binaryData):
         binaryRet = ''
-        if self.byteOrder == 'Intel' :
+        if self.byteOrder == 'Intel' : # order == 1
+            binaryData = binaryData[:,::-1]
             row = self.startBit / 8
             col = self.startBit - row * 8
             for idx in range(self.length):
@@ -87,7 +89,7 @@ class DBCMsgSignal():
                 else:
                     col += 1
             return binaryRet[::-1] #return MSB->LSB
-        elif self.byteOrder == 'Motorola':
+        elif self.byteOrder == 'Motorola': # order == 0
             binaryData = binaryData[:,::-1]
             row = self.startBit / 8
             col = self.startBit - row * 8
@@ -95,7 +97,6 @@ class DBCMsgSignal():
                 #print "binaryData size is: ", binaryData.shape
                 #print "row and col is:", [row, col]
                 binaryRet += binaryData[row][col]
-
                 if col == 0:
                     col = 7
                     row += 1
@@ -118,13 +119,13 @@ class DBCMsgSignal():
     @staticmethod
     def twosComplement(val, bits):  # positive and negative
     # compute the 2's compliment of int value val
-        if bits > 1:
-            value = int(val[1:],2)
-            if val[0]=='1':
-                value *= -1
-        else:
-            value = int(val,2)
-        return value
-    #    if (val & (1 << (bits - 1))) != 0:  # if sign bit is set e.g., 8bit: 128-255
-    #        val -= (1 << bits)  # compute negative value
-    #    return val
+        if (val & (1 << (bits - 1))) != 0:  # if sign bit is set e.g., 8bit: 128-255
+            val -= (1 << bits)  # compute negative value
+        return val
+    #    if bits > 1:
+    #        value = int(val[1:],2)
+    #        if val[0]=='1':
+    #            value *= -1
+    #    else:
+    #        value = int(val,2)
+    #    return value

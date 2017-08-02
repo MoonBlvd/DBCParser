@@ -1,5 +1,5 @@
 BO_ 380 HS_17C: 8 Vector__XXX
- SG_ Brake : 32|1@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ Brake : 32|1@0+ (1,0) [0|1] "" Vector__XXX
  SG_ EngineSpeed : 23|16@0+ (1,0) [0|255] "rpm" Vector__XXX
  SG_ AccPedal : 7|16@0+ (0.00153,0) [0|65535] "" Vector__XXX
 
@@ -126,7 +126,7 @@ BO_ 1826 TSR_detail_3: 8 Vector__XXX
  SG_ Sign_pos_Z : 32|8@1- (0.5,0) [-16|16] "" Vector__XXX
  SG_ Sign_pos_Y : 24|8@1- (0.5,0) [-32|31] "" Vector__XXX
  SG_ Sign_pos_X : 16|8@1+ (0.5,0) [0|122] "" Vector__XXX
- SG_ Filter_type : 40|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Filter_type : 40|8@1+ (1,0) [0|3] "" Vector__XXX
 
 BO_ 1825 TSR_detail_2: 8 Vector__XXX
  SG_ vision_only_sign_type : 0|8@1+ (1,0) [0|255] "" Vector__XXX
@@ -262,7 +262,7 @@ BO_ 1851 Details_ObstacleDataC: 8 Vector__XXX
  SG_ Reserved_9 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
  SG_ Reserved_8 : 42|2@1+ (1,0) [0|0] "" Vector__XXX
  SG_ Obstacle_Angle : 48|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
- SG_ Obstacle_Replaced : 44|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Obstacle_Replaced : 44|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ Object_Accel_X : 32|10@1- (0.03,0) [-15.36|15.33] "m/S2" Vector__XXX
  SG_ Obstacle_Scale_Change : 16|16@1- (0.0002,0) [-6.5536|6.5534] "pix/sec" Vector__XXX
  SG_ Obstacle_Angle_Rate : 0|16@1- (0.01,0) [-327.68|327.67] "degree" Vector__XXX
@@ -298,12 +298,12 @@ BO_ 1849 Details_ObstacleDataA: 8 Vector__XXX
 
 BO_ 1848 Details_ObstacleStatus: 6 Vector__XXX
  SG_ Reserved_10 : 45|3@1+ (1,0) [0|0] "" Vector__XXX
- SG_ Failsafe : 41|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ Close_car : 40|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Failsafe : 41|4@1+ (1,0) [0|7] "" Vector__XXX
+ SG_ Close_car : 40|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ Protocol_Version : 32|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ GO : 28|4@1+ (1,0) [0|0] "" Vector__XXX
- SG_ Right_close_rang_cut_in : 27|1@1+ (1,0) [0|0] "" Vector__XXX
- SG_ Left_close_rang_cut_in : 26|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Right_close_rang_cut_in : 27|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Left_close_rang_cut_in : 26|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ Active_Version_Number_Section : 24|2@1+ (1,0) [0|3] "" Vector__XXX
  SG_ Application_Version : 16|8@1+ (1,0) [0|255] "" Vector__XXX
  SG_ Timestamp : 8|8@1+ (1,0) [0|255] "ms" Vector__XXX
@@ -475,7 +475,7 @@ BO_ 1896 LKA_Right_Lane_A: 8 Vector__XXX
  SG_ Width_right_marking : 56|8@1+ (0.01,0) [0|2.55] "m" Vector__XXX
 
 BO_ 1895 LKA_Left_Lane_B: 4 Vector__XXX
- SG_ View_Range_Availability : 31|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ View_Range_Availability : 31|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ View_Range : 16|15@1+ (0.00390625,0) [0|127.99609375] "meter" Vector__XXX
  SG_ Heading_Angle : 0|16@1+ (0.0009765625,-31.9990234375) [-0.357|0.357] "radians" Vector__XXX
 
@@ -484,7 +484,7 @@ BO_ 1894 LKA_Left_Lane_A: 8 Vector__XXX
  SG_ Width_left_marking : 56|8@1+ (0.01,0) [0|2.5] "m" Vector__XXX
  SG_ Curvature_Derivative : 40|16@1+ (3.7252902985E-009,-0.00012206658721) [-0.00012|0.00012] "1/meter^2" Vector__XXX
  SG_ Curvature : 24|16@1+ (9.765625E-007,-0.031999023438) [-0.02|0.02] "1/meter" Vector__XXX
- SG_ Model_Degree : 6|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ Quality : 4|2@1+ (1,0) [0|0] "" Vector__XXX
- SG_ Lane_Type : 0|4@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ Model_Degree : 6|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Quality : 4|2@1+ (1,0) [0|3] "" Vector__XXX
+ SG_ Lane_Type : 0|4@1+ (1,0) [0|6] "" Vector__XXX
 
