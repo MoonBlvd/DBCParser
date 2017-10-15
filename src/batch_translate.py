@@ -44,11 +44,11 @@ def logReader(filedir, filename):
                     tmpData += line[j]
         # only translate one channel
         if init_flag == 0:
-            if tmpCH == '2':
+            if tmpCH == '1' or '2':
                 data = [tmpTime + tmpID + tmpData]
                 init_flag = 1;
         else:
-            if tmpCH == '2':
+            if tmpCH == '1' or '2':
                 data.append(tmpTime + tmpID + tmpData)
         i += 1
     return data
@@ -83,8 +83,9 @@ if __name__ == '__main__':
     #filename = 'AroundAnnArbor_CAN_1_Mobileye_2.log'
     trajectory_name = sys.argv[1]
     filename = 'BUSMASTER_'+ trajectory_name+ '.log'
-    filedir = '../data/Data_06192017/'
-    target_dir = '../translated_data/06192017/'
+    #filedir = '../data/Data_06192017/'
+    filedir = '../test_08052017/'
+    target_dir = '../test_08052017/'
     data = logReader(filedir,filename)
 
     # read and parse DBC file, obtain the message list

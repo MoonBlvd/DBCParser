@@ -10,7 +10,7 @@ def load_dictionary(fileName):
 if __name__ == '__main__':
     fileName = sys.argv[1]
     #filePath = '../translated_data/05182017/'
-    filePath = '../translated_data/06202017/'
+    filePath = '../translated_data/06172017/'
     data = load_dictionary(filePath + fileName + '.pkl')
     lenData =  len(data)
     vehicleSpeed = []
@@ -129,7 +129,7 @@ if __name__ == '__main__':
             LeftLaneHeadings.append(data[i]['Heading_Angle'])
         if data[i]['msgID'] == 1897:
             RightLaneHeadings.append(data[i]['Heading_Angle'])
-
+    '''
     # save type and position and time of trafficsign_1
     with open(filePath + fileName + '_TSR_1.csv', 'w') as csvfile:
         fieldsNames = ['Time','TSR type', 'Pos_X', 'Pos_Y', 'Pos_Z']
@@ -187,7 +187,7 @@ if __name__ == '__main__':
                              'Lane_curvature_derivative_left':LeftLaneCurvaturesDerivative[i], \
                              'Lane_position_right':RightLanePosition[i], \
                              'Lane_position_left':LeftLanePosition[i]})
-                             
+    '''                         
     with open(filePath + fileName + '_carSignalFromMobileye.csv', 'w') as csvfile:
         fieldsNames = ['Time','Speeds', 'Yaw', 'Pitch', 'Brakes', 'Wippers', 'HighBeam', 'LowBeam','RightBlink','LeftBlink']
         writer = csv.DictWriter(csvfile, fieldsNames)

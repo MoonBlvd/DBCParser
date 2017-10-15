@@ -1,0 +1,8 @@
+data
+translated_data
+*.csv
+*.xlsx
+*.xls
+test_08052017
+.DS_Store
+*.pyc
