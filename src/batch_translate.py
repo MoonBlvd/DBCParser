@@ -34,21 +34,24 @@ def logReader(filedir, filename):
                 tmpTime = line[0:13]
             if j == 17:
                 tmpCH = line[17]
+                if tmpCH == '2':
+                    break
             if j == 21: # save the canID
                 tmpID = line[21:24]
                 #j += 5
             if j == 27: # save the message size
+                print line
                 tmpDataDigits = str(int(line[27])-1)
             if j >= 29: # save the data bytes
                 if line[j] != ' ' and line[j] != '\n':
                     tmpData += line[j]
         # only translate one channel
         if init_flag == 0:
-            if tmpCH == '1' or '2':
+            if tmpCH == '1':# or '2':
                 data = [tmpTime + tmpID + tmpData]
                 init_flag = 1;
         else:
-            if tmpCH == '1' or '2':
+            if tmpCH == '1':# or '2':
                 data.append(tmpTime + tmpID + tmpData)
         i += 1
     return data
@@ -84,8 +87,8 @@ if __name__ == '__main__':
     trajectory_name = sys.argv[1]
     filename = 'BUSMASTER_'+ trajectory_name+ '.log'
     #filedir = '../data/Data_06192017/'
-    filedir = '../test_08052017/'
-    target_dir = '../test_08052017/'
+    filedir = '../data/Data_10152017/'#'../test_08052017/'
+    target_dir = '../translated_data/10152017/' #'../test_08052017/'
     data = logReader(filedir,filename)
 
     # read and parse DBC file, obtain the message list
