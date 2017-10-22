@@ -87,8 +87,8 @@ if __name__ == '__main__':
     trajectory_name = sys.argv[1]
     filename = 'BUSMASTER_'+ trajectory_name+ '.log'
     #filedir = '../data/Data_06192017/'
-    filedir = '../data/Data_10152017/'#'../test_08052017/'
-    target_dir = '../translated_data/10152017/' #'../test_08052017/'
+    filedir = '../data/Data_10172017/'#'../test_08052017/'
+    target_dir = '../translated_data/10172017/' #'../test_08052017/'
     data = logReader(filedir,filename)
 
     # read and parse DBC file, obtain the message list
