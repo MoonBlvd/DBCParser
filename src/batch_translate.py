@@ -34,10 +34,12 @@ def logReader(filedir, filename):
                 tmpTime = line[0:13]
             if j == 17:
                 tmpCH = line[17]
-                if tmpCH == '2':
-                    break
+                #if tmpCH == '2':
+                #    break
             if j == 21: # save the canID
                 tmpID = line[21:24]
+                if tmpID == '18D':
+                    break
                 #j += 5
             if j == 27: # save the message size
                 print line
@@ -47,17 +49,19 @@ def logReader(filedir, filename):
                     tmpData += line[j]
         # only translate one channel
         if init_flag == 0:
-            if tmpCH == '1':# or '2':
+            if (tmpCH == '1' or '2') and (tmpID != '18D'):
                 data = [tmpTime + tmpID + tmpData]
                 init_flag = 1;
         else:
-            if tmpCH == '1':# or '2':
+            if (tmpCH == '1' or '2') and (tmpID != '18D'):
                 data.append(tmpTime + tmpID + tmpData)
         i += 1
     return data
 
 def str2binary(str_data):
     msgID = int(str_data[13:16], 16) # decimal msg ID
+    #if msgID == 397:
+    #    return msgID, None
 
     dataLength = (len(str_data[16:])-1) * 4
     binaryStr = format(int(str_data[16:], 16), '0'+str(dataLength)+'b')
@@ -110,6 +114,9 @@ if __name__ == '__main__':
         pt = datetime.strptime(currTime, '%H:%M:%S:%f')
         currTime = pt.microsecond*10e-7 + pt.second + pt.minute*60 + pt.hour*3600
         msgID, binaryData = str2binary(data[i])
+        #if msgID == 397:
+        #    continue
+
         tmpData = translate(msgID, binaryData, currTime, msgList, FILE)
         if tmpData != None:
             DICTs.append(tmpData)
