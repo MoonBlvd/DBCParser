@@ -1,150 +1,152 @@
-clear all;clc;
+function data_visualization()    
+    clear all;clc;
 
-% %process obstacle data
-% path = '06192017/';
-% name = 'Union_to_Lewisburg';
-% obstacles = csvread([path, name, '_obstacles.csv']);
-% lanes = csvread([path, name,'_lanes.csv']);
-% traffic_signs = csvread([path, name,'_TSR_1.csv']);
-% CarSignalFromMobileye = csvread([path, name,'_carSignalFromMobileye.csv']);
-% MIDGs = csvread([path, 'MIDG_Union_to_Lewisburg.csv']);
-% name = '06/19/2017 data';
+    % %process obstacle data
+    % path = '06192017/';
+    % name = 'Union_to_Lewisburg';
+    % obstacles = csvread([path, name, '_obstacles.csv']);
+    % lanes = csvread([path, name,'_lanes.csv']);
+    % traffic_signs = csvread([path, name,'_TSR_1.csv']);
+    % CarSignalFromMobileye = csvread([path, name,'_carSignalFromMobileye.csv']);
+    % MIDGs = csvread([path, 'MIDG_Union_to_Lewisburg.csv']);
+    % name = '06/19/2017 data';
 
-% path = '06212017/';
-% name = 'A_to_B';
-% obstacles = csvread([path, name, '_obstacles.csv']);
-% lanes = csvread([path, name,'_lanes.csv']);
-% traffic_signs = csvread([path, name,'_TSR_1.csv']);
-% CarSignalFromMobileye = csvread([path, name,'_carSignalFromMobileye.csv']);
-% MIDGs = csvread([path, 'MIDG_A_to_D.csv']);
-% name = '06/21/2017 data'
+    % path = '06212017/';
+    % name = 'A_to_B';
+    % obstacles = csvread([path, name, '_obstacles.csv']);
+    % lanes = csvread([path, name,'_lanes.csv']);
+    % traffic_signs = csvread([path, name,'_TSR_1.csv']);
+    % CarSignalFromMobileye = csvread([path, name,'_carSignalFromMobileye.csv']);
+    % MIDGs = csvread([path, 'MIDG_A_to_D.csv']);
+    % name = '06/21/2017 data'
 
-% %process obstacle data
-% path = '06212017/';
-% name = 'C_to_D';
-% obstacles = csvread([path, name, '_obstacles.csv']);
-% lanes = csvread([path, name,'_lanes.csv']);
-% traffic_signs = csvread([path, name,'_TSR_1.csv']);
-% CarSignalFromMobileye = csvread([path, name,'_carSignalFromMobileye.csv']);
-% MIDGs = csvread([path, 'MIDG_A_to_D.csv']);
-% name = '06/21/2017 data 2'
+    % %process obstacle data
+    % path = '06212017/';
+    % name = 'C_to_D';
+    % obstacles = csvread([path, name, '_obstacles.csv']);
+    % lanes = csvread([path, name,'_lanes.csv']);
+    % traffic_signs = csvread([path, name,'_TSR_1.csv']);
+    % CarSignalFromMobileye = csvread([path, name,'_carSignalFromMobileye.csv']);
+    % MIDGs = csvread([path, 'MIDG_A_to_D.csv']);
+    % name = '06/21/2017 data 2'
 
-file_path = '10172017/';
-name = '05/18/2017 data';
-obstacles = csvread([file_path, 'Obstacles.csv']);
-lanes = csvread([file_path, 'Lanes.csv']);
-traffic_signs = csvread([file_path, 'TSR_1.csv']);
-CarSignalFromMobileye = csvread([file_path, 'CarSignalFromMobileye.csv']);
-MIDGs = csvread([file_path, 'MIDG.csv']);
+    file_path = '../translated_data/10172017/E_to_F_';
+    name = '05/18/2017 data';
+    obstacles = csvread([file_path, 'Obstacles.csv']); % Time	Obstacle_ID	Obstacle_Type	Obstacle_Age	Obstacle_Status	Obstacle_X	Obstacle_Y	Obstacle_Lane	Obstacle_Width	Obstacle_Length	Obstacle_Brake	Obstacle_Vel_X	Obstacle_Accel_X	Obstacle_Angle
+    lanes = csvread([file_path, 'Lanes.csv']); % Time	Lane_type_right	Lane_type_left	Lane_conf_right	Lane_conf_left	Lane_dist_right	Lane_dist_left	Lane_heading_right	Lane_heading_left	Lane_curvature_right	Lane_curvature_left	Lane_curvature	Lane_curvature_derivative_right	Lane_curvature_derivative_left	Lane_position_right	Lane_position_left
+    traffic_signs = csvread([file_path, 'TSR_1.csv']); % Time	TSR type	Pos_X	Pos_Y	Pos_Z
+    CarSignalFromMobileye = csvread([file_path, 'CarSignalFromMobileye.csv']); % Time	Speeds	Yaw	Pitch	Brakes	Wippers	HighBeam	LowBeam	RightBlink	LeftBlink
+    MIDGs = csvread([file_path, 'MIDG.csv']);
 
-global num_lanes lane_width car_w car_l freq range lane_length
-num_lanes = 3;
-lane_width = 4;
-car_w = 2;
-car_l = 5;
-freq = 11; %Hz
-range = [-30,30, -50,255];%lateral (y) limits and longitudinal (x) limits.
-lane_length = 20;
-% find the same_frame and different_frame by time interval threshold of
-% obstacle signal
-obstacles_time = obstacles(:,1);
-time_intervals = obstacles_time(2:end)-obstacles_time(1:end-1);
-same_frame = find(time_intervals < 1/freq)+1;
-different_frame = find(time_intervals > 1/freq)+1;
+    global num_lanes lane_width car_w car_l freq range lane_length
+    num_lanes = 3;
+    lane_width = 4;
+    car_w = 2;
+    car_l = 5;
+    freq = 11; %Hz
+    range = [-30,30, -50,255];%lateral (y) limits and longitudinal (x) limits.
+    lane_length = 20;
+    % find the same_frame and different_frame by time interval threshold of
+    % obstacle signal
+    obstacles_time = obstacles(:,1);
+    time_intervals = obstacles_time(2:end)-obstacles_time(1:end-1);
+    same_frame = find(time_intervals < 1/freq)+1;
+    different_frame = find(time_intervals > 1/freq)+1;
 
-num_data = size(CarSignalFromMobileye,1);
-%start = 5010;
-%start = 27000;
-start = 1;
+    num_data = size(CarSignalFromMobileye,1);
+    %start = 5010;
+    %start = 27000;
+    start = 1;
 
-[car_signal, obstacle, lane, TSR, MIDG] = extract_structures(CarSignalFromMobileye, obstacles, lanes, traffic_signs, MIDGs);
-%plot_car_signal(car_signal, obstacle, lane, TSR, MIDG, name)
+    [car_signal, obstacle, lane, TSR, MIDG] = extract_structures(CarSignalFromMobileye, obstacles, lanes, traffic_signs, MIDGs);
+    %plot_car_signal(car_signal, obstacle, lane, TSR, MIDG, name)
 
-%% fit gaussian 
-x = -0.1:0.005:0.1;
-%y = 1/sqrt(2*pi*var_pitch) * exp((-(x-m_pitch).^2)/(2*var_pitch));
-%plot(x,y,'-');
+    %% fit gaussian 
+    x = -0.1:0.005:0.1;
+    %y = 1/sqrt(2*pi*var_pitch) * exp((-(x-m_pitch).^2)/(2*var_pitch));
+    %plot(x,y,'-');
 
-% plot histogram
-% %histogram(car_signal.pitch);hold on;
-% pd = fitdist(MIDG.pitch, 'Normal');
-% y = pdf(pd, x);
-% %plot(x,y,'-');hold on;
-% %histfit(car_signal.pitch,20,'normal');
-% histfit(MIDG.roll,20,'normal');
+    % plot histogram
+    % %histogram(car_signal.pitch);hold on;
+    % pd = fitdist(MIDG.pitch, 'Normal');
+    % y = pdf(pd, x);
+    % %plot(x,y,'-');hold on;
+    % %histfit(car_signal.pitch,20,'normal');
+    % histfit(MIDG.roll,20,'normal');
 
-%% plot traffic
-k_obstacle = 1;k_TSR = 1;
-num_obstacles = 0;
-prev_time = 0;%car_signal.time(start-1);
-Frames = [];
-num_videos = 1;
-data_save = [];
-for i = start:num_data
-    plot_obstacle_flag = false;
-    plot_TSR_flag = false;
+    %% plot traffic
+    k_obstacle = 1;k_TSR = 1;
     num_obstacles = 0;
-    num_TSR = 0;
-%     if i == start
-%         fig = figure(1);
-%     else
-%         clf(fig);
-%         fig = figure(1);
-%     end
-%     set(fig, 'Position', [100, 100, 300, 1000]);
-%     % plot lanes at this frame
-%     plot_lanes(lane, i);
-%     hold on;
-    
-%     % plot ego car
-%     tmp = plot_one_obstacle(nan, k_obstacle, num_obstacles);
-%     hold on;
-    
-    % plot all obstacles detected at this frame
-    while (k_obstacle <= length(obstacle.time)) && (car_signal.time(i) >= obstacle.time(k_obstacle) + 0.001) % if obstacles are detected, give 0.001 second threshol
-        num_obstacles = num_obstacles + 1;
-%         obstacle_car = plot_one_obstacle(obstacle, k_obstacle, num_obstacles);hold on;
-        k_obstacle = k_obstacle + 1;
+    prev_time = 0;%car_signal.time(start-1);
+    Frames = [];
+    num_videos = 1;
+    data_save = [];
+    for i = start:num_data
+        plot_obstacle_flag = false;
+        plot_TSR_flag = false;
+        num_obstacles = 0;
+        num_TSR = 0;
+        if i == start
+            fig = figure(1);
+        else
+            clf(fig);
+            fig = figure(1);
+        end
+        set(fig, 'Position', [100, 100, 300, 1000]);
+        % plot lanes at this frame
+        plot_lanes(lane, i);
+        hold on;
+
+        % plot ego car
+        tmp = plot_one_obstacle(nan, k_obstacle, num_obstacles);
+        hold on;
+
+        % plot all obstacles detected at this frame
+        while (k_obstacle <= length(obstacle.time)) && (car_signal.time(i) >= obstacle.time(k_obstacle) + 0.001) % if obstacles are detected, give 0.001 second threshol
+            num_obstacles = num_obstacles + 1;
+            obstacle_car = plot_one_obstacle(obstacle, k_obstacle, num_obstacles);hold on;
+            k_obstacle = k_obstacle + 1;
+        end
+
+        % plot all traffic signs detected at this frame
+        while (k_TSR <= length(TSR.time)) && (car_signal.time(i) >= TSR.time(k_TSR))
+            num_TSR = num_TSR + 1;
+            hold on;
+            plot(TSR.y(k_TSR), TSR.x(k_TSR), 'ko','MarkerSize', 8, 'MarkerFaceColor','k');hold on;
+            k_TSR = k_TSR + 1;
+        end
+        % add notations
+        time_annotation = ['Time: ',num2str(car_signal.time(i)), ' [seconds]'];
+        text(range(1),range(4)-5,time_annotation,'FontSize',16);
+        idx_annotation = ['Index: ',num2str(i)];
+        text(range(1),range(4)-15,idx_annotation,'FontSize',16);
+        xlim(range(1:2));
+        ylim(range(3:4));
+        %pause(car_s ignal.time(i) - prev_time);
+
+        % save videos
+        Frames = [Frames,getframe(gcf)];
+        if size(Frames,2) == 2000 || i == num_data
+            save_videos(Frames, num_videos);
+            Frames = [];
+            num_videos = num_videos + 1;
+        end
+        hold off;
+        prev_time = car_signal.time(i);
+        data = [i, prev_time, num_obstacles, num_TSR, lane.right_type(i), lane.right_conf(i), lane.right_dist(i), lane.left_type(i), lane.left_conf(i), lane.left_dist(i)];
+        data_save = [data_save; data];
+        i
     end
-    
-    % plot all traffic signs detected at this frame
-    while (k_TSR <= length(TSR.time)) && (car_signal.time(i) >= TSR.time(k_TSR))
-        num_TSR = num_TSR + 1;
-%         hold on;
-%         plot(TSR.y(k_TSR), TSR.x(k_TSR), 'ko','MarkerSize', 8, 'MarkerFaceColor','k');hold on;
-        k_TSR = k_TSR + 1;
-    end
-%     % add notations
-%     time_annotation = ['Time: ',num2str(car_signal.time(i)), ' [seconds]'];
-%     text(range(1),range(4)-5,time_annotation,'FontSize',16);
-%     idx_annotation = ['Index: ',num2str(i)];
-%     text(range(1),range(4)-15,idx_annotation,'FontSize',16);
-%     xlim(range(1:2));
-%     ylim(range(3:4));
-    %pause(car_s ignal.time(i) - prev_time);
-    
-%     % save videos
-%     Frames = [Frames,getframe(gcf)];
-%     if size(Frames,2) == 1000 || i == num_data
-%         save_videos(Frames, num_videos);
-%         Frames = [];
-%         num_videos = num_videos + 1;
-%     end
-%     hold off;
-    prev_time = car_signal.time(i);
-    data = [i, prev_time, num_obstacles, num_TSR, lane.right_type(i), lane.right_conf(i), lane.right_dist(i), lane.left_type(i), lane.left_conf(i), lane.left_dist(i)];
-    data_save = [data_save; data];
-    i
+    csvwrite('summary.csv', data_save);
+    %save_videos(Frames);
+    % video = VideoWriter('Mobileye_detection.avi');
+    % open(video);
+    % writeVideo(video, Frames);
+    % close(video);
 end
-csvwrite('summary.csv', data_save);
-%save_videos(Frames);
-% video = VideoWriter('Mobileye_detection.avi');
-% open(video);
-% writeVideo(video, Frames);
-% close(video);
 
 function [car_signal, obstacle, lane, TSR, MIDG] = extract_structures(CarSignalFromMobileye, obstacles, lanes, traffic_signs, MIDGs)
-global car_l    
+    global car_l    
     obstacle.time = obstacles(:,1);
     obstacle.ID = obstacles(:,2);
     obstacle.type = obstacles(:,3);
@@ -188,17 +190,20 @@ global car_l
     TSR.y = traffic_signs(:,4);
     TSR.z = traffic_signs(:,5);
     
-    MIDG.yaw = MIDGs(:,2);
-    MIDG.pitch = MIDGs(:,3);
-    MIDG.roll = MIDGs(:,4);
-    MIDG.v_east = MIDGs(:,5);
-    MIDG.v_north = MIDGs(:,6);
-    MIDG.accel_x = MIDGs(:,7);
-    MIDG.accel_y = MIDGs(:,8);
-    MIDG.accel_z = MIDGs(:,9);
-    MIDG.P = MIDGs(:,10);
-    MIDG.Q = MIDGs(:,11);
-    MIDG.R = MIDGs(:,12);
+    if ~isempty(MIDGs)
+        MIDG.yaw = MIDGs(:,2);
+        MIDG.pitch = MIDGs(:,3);
+        MIDG.roll = MIDGs(:,4);
+        MIDG.v_east = MIDGs(:,5);
+        MIDG.v_north = MIDGs(:,6);
+        MIDG.accel_x = MIDGs(:,7);
+        MIDG.accel_y = MIDGs(:,8);
+        MIDG.accel_z = MIDGs(:,9);
+        MIDG.P = MIDGs(:,10);
+        MIDG.Q = MIDGs(:,11);
+        MIDG.R = MIDGs(:,12);
+
+    end
 end
 
 function plot_lanes(lane, i)

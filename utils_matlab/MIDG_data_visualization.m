@@ -8,9 +8,9 @@ clear all; clc;
 % figure(4);plot(NAV_pos(Start:End,2), NAV_pos(Start:End,1))
 
 %load data
-filepath = 'Data_05182017/';
+filepath = '../translated_data/10172017/';
 %filename = 'MIDG_Union_to_Lewisburg';
-filename = 'MIDG';
+filename = 'E_to_F_MIDG';
 data1 = load([filepath, filename, '.txt']);
 time = (data1(:,3)-data1(1,3))*10e-4;
 num_data = length(time);
@@ -103,7 +103,7 @@ End = 10170;
 format long
 data = data;
 
-csvwrite([filepath,filename,'.csv'], data,'precision', '%.6f');
+csvwrite([filepath,filename,'.csv'], data,'precision', '%.8f');
 %long_vel = velocities(:,2) .* cos(yaws) + velocities(:,1) .* sin(yaws);
 %lat_vel = velocities(:,2) .* sin(yaws) - velocities(:,1) .* cos(yaws);
 % plot(NAV_pos(:,2), NAV_pos(:,1), 'b');

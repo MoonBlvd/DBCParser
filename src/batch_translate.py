@@ -6,6 +6,11 @@ import cPickle as pkl
 
 from DBCParser import DBCParser
 '''
+This code load the raw BUSMASTER data log (in this project, Mobileye data),
+and translate it and save as a pkl file and a text file.
+'''
+
+'''
 def csvReader(filename):
     i = 0
     with open('../data/'+filename, 'r') as file:

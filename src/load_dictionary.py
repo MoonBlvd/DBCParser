@@ -3,7 +3,10 @@ import pickle
 import matplotlib.pyplot as plt
 import csv
 import sys
-
+'''
+This code load the dictionary saved by batch_translate.py,
+and save four csv files: TSR, obstacles, lanes and car signals
+'''
 def load_dictionary(fileName):
     data = pickle.load(open(fileName, 'rb'))
     return data
