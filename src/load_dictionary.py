@@ -13,7 +13,7 @@ def load_dictionary(fileName):
 if __name__ == '__main__':
     fileName = sys.argv[1]
     #filePath = '../translated_data/05182017/'
-    filePath = '../translated_data/10172017/'
+    filePath = '../translated_data/05182017/'
     data = load_dictionary(filePath + fileName + '.pkl')
     lenData =  len(data)
     vehicleSpeed = []
@@ -42,6 +42,7 @@ if __name__ == '__main__':
     ObstacleAge = []
     ObstacleAccelX = []
     ObstacleAngle = []
+    ObstacleAngleRate = []
     LaneTime = []
     LaneTypes = []
     LaneConfs = []
@@ -102,6 +103,7 @@ if __name__ == '__main__':
         if data[i]['msgID'] in ObstacleListC:
             ObstacleAccelX.append(data[i]['Object_Accel_X'])
             ObstacleAngle.append(data[i]['Obstacle_Angle'])
+            ObstacleAngleRate.append(data[i]['Obstacle_Angle_Rate'])
         # Lanes
         if data[i]['msgID'] == 1641:
             LaneTime.append(data[i]['Time'])
@@ -132,6 +134,7 @@ if __name__ == '__main__':
             LeftLaneHeadings.append(data[i]['Heading_Angle'])
         if data[i]['msgID'] == 1897:
             RightLaneHeadings.append(data[i]['Heading_Angle'])
+    '''
     # save type and position and time of trafficsign_1
     with open(filePath + fileName + '_TSR_1.csv', 'w') as csvfile:
         fieldsNames = ['Time','TSR type', 'Pos_X', 'Pos_Y', 'Pos_Z']
@@ -143,10 +146,11 @@ if __name__ == '__main__':
                              'Pos_X': TSR1Position[i][0], \
                              'Pos_Y': TSR1Position[i][1], \
                              'Pos_Z': TSR1Position[i][2]})
+    '''
     with open(filePath + fileName + '_obstacles.csv', 'w') as csvfile:
         fieldsNames = ['Time','Obstacle_ID','Obstacle_Type', 'Obstacle_Age', 'Obstacle_Status','Obstacle_X',\
                        'Obstacle_Y','Obstacle_Lane','Obstacle_Width','Obstacle_Length','Obstacle_Brake',\
-                       'Obstacle_Vel_X','Obstacle_Accel_X','Obstacle_Angle']
+                       'Obstacle_Vel_X','Obstacle_Accel_X','Obstacle_Angle','Obstacle_Angle_Rate']
         writer = csv.DictWriter(csvfile, fieldsNames)
         writer.writeheader()
         for i in range(len(ObstacleTime)):
@@ -163,7 +167,9 @@ if __name__ == '__main__':
                              'Obstacle_Brake': ObstacleBrake[i], \
                              'Obstacle_Vel_X': ObstacleVelX[i], \
                              'Obstacle_Accel_X': ObstacleAccelX[i], \
-                             'Obstacle_Angle': ObstacleAngle[i]})
+                             'Obstacle_Angle': ObstacleAngle[i], \
+                             'Obstacle_Angle_Rate': ObstacleAngleRate[i]})
+    '''
     with open(filePath + fileName+'_lanes.csv', 'w') as csvfile:
         fieldsNames = ['Time','Lane_type_right', 'Lane_type_left', 'Lane_conf_right', 'Lane_conf_left', \
                        'Lane_dist_right', 'Lane_dist_left', 'Lane_heading_right', 'Lane_heading_left', \
@@ -189,6 +195,7 @@ if __name__ == '__main__':
                              'Lane_curvature_derivative_left':LeftLaneCurvaturesDerivative[i], \
                              'Lane_position_right':RightLanePosition[i], \
                              'Lane_position_left':LeftLanePosition[i]})
+                             
     with open(filePath + fileName + '_carSignalFromMobileye.csv', 'w') as csvfile:
         fieldsNames = ['Time','Speeds', 'Yaw', 'Pitch', 'Brakes', 'Wippers', 'HighBeam', 'LowBeam','RightBlink','LeftBlink']
         writer = csv.DictWriter(csvfile, fieldsNames)
@@ -204,7 +211,7 @@ if __name__ == '__main__':
                              'LowBeam': Beams[i][1],\
                              'RightBlink': Blinks[i][0],\
                              'LeftBlink': Blinks[i][1]})
-'''
+
     plt.figure(1)
     plt.plot(time464, vehicleSpeed)
     plt.xlabel('Time [sec]')

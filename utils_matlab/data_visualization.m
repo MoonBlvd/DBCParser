@@ -30,13 +30,15 @@ function data_visualization()
     % MIDGs = csvread([path, 'MIDG_A_to_D.csv']);
     % name = '06/21/2017 data 2'
 
-    file_path = '../translated_data/10172017/E_to_F_';
+
+    file_path = '../translated_data/05182017/';
     name = '05/18/2017 data';
-    obstacles = csvread([file_path, 'Obstacles.csv']); % Time	Obstacle_ID	Obstacle_Type	Obstacle_Age	Obstacle_Status	Obstacle_X	Obstacle_Y	Obstacle_Lane	Obstacle_Width	Obstacle_Length	Obstacle_Brake	Obstacle_Vel_X	Obstacle_Accel_X	Obstacle_Angle
-    lanes = csvread([file_path, 'Lanes.csv']); % Time	Lane_type_right	Lane_type_left	Lane_conf_right	Lane_conf_left	Lane_dist_right	Lane_dist_left	Lane_heading_right	Lane_heading_left	Lane_curvature_right	Lane_curvature_left	Lane_curvature	Lane_curvature_derivative_right	Lane_curvature_derivative_left	Lane_position_right	Lane_position_left
-    traffic_signs = csvread([file_path, 'TSR_1.csv']); % Time	TSR type	Pos_X	Pos_Y	Pos_Z
-    CarSignalFromMobileye = csvread([file_path, 'CarSignalFromMobileye.csv']); % Time	Speeds	Yaw	Pitch	Brakes	Wippers	HighBeam	LowBeam	RightBlink	LeftBlink
+    obstacles = csvread([file_path, 'Obstacles.csv']);
+    lanes = csvread([file_path, 'Lanes.csv']);
+    traffic_signs = csvread([file_path, 'TSR_1.csv']);
+    CarSignalFromMobileye = csvread([file_path, 'CarSignalFromMobileye.csv']);
     MIDGs = csvread([file_path, 'MIDG.csv']);
+
 
     global num_lanes lane_width car_w car_l freq range lane_length
     num_lanes = 3;
