@@ -29,7 +29,7 @@ clear all;clc;
 % MIDGs = csvread([path, 'MIDG_A_to_D.csv']);
 % name = '06/21/2017 data 2'
 
-file_path = '05182017/';
+file_path = '../translated_data/05182017/';
 name = '05/18/2017 data';
 obstacles = csvread([file_path, 'Obstacles.csv']);
 lanes = csvread([file_path, 'Lanes.csv']);

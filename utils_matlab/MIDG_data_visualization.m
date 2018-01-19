@@ -8,7 +8,7 @@ clear all; clc;
 % figure(4);plot(NAV_pos(Start:End,2), NAV_pos(Start:End,1))
 
 %load data
-filepath = 'Data_05182017/';
+filepath = '../data/Data_05182017/';
 %filename = 'MIDG_Union_to_Lewisburg';
 filename = 'MIDG';
 data1 = load([filepath, filename, '.txt']);
@@ -25,7 +25,7 @@ NAV_vel = data1(:,18:20) * 10e-3; %V East, north, up, m/s
 %NAV_vel = NAV_vel * 10e-2*3.6;
 
 GPS_pos = ecef2lla(data1(:,34:36));%*10e-7;
-GPS_vel = data1(:,37:39) * 10e-3 * 3.6; % East north up
+GPS_vel = data1(:,37:39) * 10e-3; % East north up
 %[vx, vy, vz] = ecef2enu(data1(:,37), data1(:,38), data1(:,39), 0, 0, 0, referenceEllipsoid('wgs84'), 'radians');
 %GPS_vel = [vx,vy,vz];
 %GPS_vel = GPS_vel * 10e-2*3.6;
