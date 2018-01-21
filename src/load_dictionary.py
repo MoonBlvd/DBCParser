@@ -134,7 +134,7 @@ if __name__ == '__main__':
             LeftLaneHeadings.append(data[i]['Heading_Angle'])
         if data[i]['msgID'] == 1897:
             RightLaneHeadings.append(data[i]['Heading_Angle'])
-    '''
+    
     # save type and position and time of trafficsign_1
     with open(filePath + fileName + '_TSR_1.csv', 'w') as csvfile:
         fieldsNames = ['Time','TSR type', 'Pos_X', 'Pos_Y', 'Pos_Z']
@@ -146,7 +146,7 @@ if __name__ == '__main__':
                              'Pos_X': TSR1Position[i][0], \
                              'Pos_Y': TSR1Position[i][1], \
                              'Pos_Z': TSR1Position[i][2]})
-    '''
+    
     with open(filePath + fileName + '_obstacles.csv', 'w') as csvfile:
         fieldsNames = ['Time','Obstacle_ID','Obstacle_Type', 'Obstacle_Age', 'Obstacle_Status','Obstacle_X',\
                        'Obstacle_Y','Obstacle_Lane','Obstacle_Width','Obstacle_Length','Obstacle_Brake',\
@@ -169,7 +169,7 @@ if __name__ == '__main__':
                              'Obstacle_Accel_X': ObstacleAccelX[i], \
                              'Obstacle_Angle': ObstacleAngle[i], \
                              'Obstacle_Angle_Rate': ObstacleAngleRate[i]})
-    '''
+    
     with open(filePath + fileName+'_lanes.csv', 'w') as csvfile:
         fieldsNames = ['Time','Lane_type_right', 'Lane_type_left', 'Lane_conf_right', 'Lane_conf_left', \
                        'Lane_dist_right', 'Lane_dist_left', 'Lane_heading_right', 'Lane_heading_left', \
@@ -211,7 +211,7 @@ if __name__ == '__main__':
                              'LowBeam': Beams[i][1],\
                              'RightBlink': Blinks[i][0],\
                              'LeftBlink': Blinks[i][1]})
-
+'''
     plt.figure(1)
     plt.plot(time464, vehicleSpeed)
     plt.xlabel('Time [sec]')
