@@ -62,6 +62,8 @@ BO_ 1792 AWS: 8 ME_AWS_CANA
  SG_ General_pedestrian : 51|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ Blinker_reminder_enabled : 45|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ Blinker_reminder : 43|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Right_crossing : 37|1@1+ (1,0) [0|1] "" Vector__XXX
+ SG_ Left_crossing : 36|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ FCW_on : 35|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ RLDW_on : 34|1@1+ (1,0) [0|1] "" Vector__XXX
  SG_ LLDW_on : 33|1@1+ (1,0) [0|1] "" Vector__XXX

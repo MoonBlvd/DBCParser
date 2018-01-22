@@ -47,7 +47,6 @@ def logReader(filedir, filename):
                     break
                 #j += 5
             if j == 27: # save the message size
-                print line
                 tmpDataDigits = str(int(line[27])-1)
             if j >= 29: # save the data bytes
                 if line[j] != ' ' and line[j] != '\n':
@@ -93,11 +92,15 @@ def translate(msgID, binaryData, currTime, msgList, FILE):
 if __name__ == '__main__':  
 	# code for reading and publishing string type data
     #filename = 'AroundAnnArbor_CAN_1_Mobileye_2.log'
-    trajectory_name = sys.argv[1]
-    filename = 'BUSMASTER_'+ trajectory_name+ '.log'
+    dir_name = sys.argv[1]
+    trajectory_name = sys.argv[2]
+    # filename = 'BUSMASTER_'+ trajectory_name+ '.log'
+    filename = trajectory_name + '.log'
     #filedir = '../data/Data_06192017/'
-    filedir = '../data/Data_10172017/'#'../test_08052017/'
-    target_dir = '../translated_data/10172017/' #'../test_08052017/'
+    # filedir = '../data/Data_10172017/'#'../test_08052017/'
+    # target_dir = '../translated_data/10172017/' #'../test_08052017/'
+    filedir = '../data/' + dir_name + '/' #'../test_08052017/'
+    target_dir = '../translated_data/' + dir_name + '/'#'../test_08052017/'
     data = logReader(filedir,filename)
 
     # read and parse DBC file, obtain the message list

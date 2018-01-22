@@ -7,14 +7,14 @@ import sys
 This code load the dictionary saved by batch_translate.py,
 and save four csv files: TSR, obstacles, lanes and car signals
 '''
-def load_dictionary(fileName):
-    data = pickle.load(open(fileName, 'rb'))
+def load_dictionary(file_name):
+    data = pickle.load(open(file_name, 'rb'))
     return data
 if __name__ == '__main__':
-    fileName = sys.argv[1]
-    #filePath = '../translated_data/05182017/'
-    filePath = '../translated_data/05182017/'
-    data = load_dictionary(filePath + fileName + '.pkl')
+    file_dir = sys.argv[1]
+    file_name = sys.argv[2]
+    file_dir = '../translacted_data/' + file_dir + '/' 
+    data = load_dictionary(file_dir + file_name + '.pkl')
     lenData =  len(data)
     vehicleSpeed = []
     time464 = []
@@ -64,6 +64,21 @@ if __name__ == '__main__':
     Blinks = []
     Beams = []
     Wippers = []
+
+    warning_time = []
+    FCW = []
+    LLDW = []
+    RLDW = []
+    LCrossing = []
+    RCrossing = []
+    FailSafe = []
+    PedFCW = []
+    PedDZ = []
+    Headway = []
+    HeadwayW = []
+    Maintenance = []
+    LanesOff = []
+    HeadwayValid = []
     for i in range(lenData):
         if data[i]['msgID'] == 464:
             vehicleSpeed.append(data[i]['VehicleSpeed'])
@@ -75,6 +90,22 @@ if __name__ == '__main__':
             brake.append(data[i]['Brake'])
             accelPedal.append(data[i]['AccPedal']/100)
             time380.append(data[i]['Time'])
+        # Mobileye warnings
+        if data[i]['msgID'] == 1792:
+            warning_time.append(data[i]['Time'])
+            FCW.append(data[i]['FCW_on'])
+            LLDW.append(data[i]['LLDW_on'])
+            RLDW.append(data[i]['RLDW_on'])
+            LCrossing.append(data[i]['Left_crossing'])
+            RCrossing.append(data[i]['Right_crossing'])
+            FailSafe.append(data[i]['Fail_safe'])
+            PedFCW.append(data[i]['PCW_PedDZ'])
+            # PedDZ.append(data[i]['PCW_PedDz'])
+            Headway.append(data[i]['Headway_measurement'])
+            HeadwayValid.append(data[i]['Headway_valid'])
+            HeadwayW.append(data[i]['HW_Warning_level'])
+            Maintenance.append(data[i]['Maintenance'])
+            LanesOff.append(data[i]['LDW_off'])
         # Traffic Signs
         if data[i]['msgID'] in TSRList:
             TSR1Position.append(np.array([ \
@@ -122,6 +153,7 @@ if __name__ == '__main__':
             YawAngles.append(data[i]['Yaw_Angle'])
             PitchAngles.append(data[i]['Pitch_Angle'])
             Curvatures.append(data[i]['Lane_Curvature'])
+            
         if data[i]['msgID'] == 1894:
             LeftLaneCurvatures.append(data[i]['Curvature'])
             LeftLaneCurvaturesDerivative.append(data[i]['Curvature_Derivative'])
@@ -136,7 +168,26 @@ if __name__ == '__main__':
             RightLaneHeadings.append(data[i]['Heading_Angle'])
     
     # save type and position and time of trafficsign_1
-    with open(filePath + fileName + '_TSR_1.csv', 'w') as csvfile:
+    with open(file_dir + file_name + '_Warnings.csv', 'w') as csvfile:
+        fieldsNames = ['Time','FCW','LLDW','RLDW','FailSafe','PedFCW','LCrossing','RCrossing',
+                             'HeadwayWarning','HeadwayMeasure','HeadwayValid','Maintenance','LanesOff']
+        writer = csv.DictWriter(csvfile, fieldsNames)
+        writer.writeheader()
+        for i in range(len(warning_time)):
+            writer.writerow({'Time': warning_time[i], \
+                             'FCW': FCW[i], \
+                             'LLDW': LLDW[i], \
+                             'RLDW': RLDW[i], \
+                             'FailSafe': FailSafe[i], \
+                             'PedFCW': PedFCW[i], \
+                             'LCrossing': LCrossing[i], \
+                             'RCrossing': RCrossing[i], \
+                             'HeadwayWarning': HeadwayW[i], \
+                             'HeadwayMeasure': Headway[i], \
+                             'HeadwayValid': HeadwayValid[i], \
+                             'Maintenance': Maintenance[i], \
+                             'LanesOff': LanesOff[i]})
+    with open(file_dir + file_name + '_TSR_1.csv', 'w') as csvfile:
         fieldsNames = ['Time','TSR type', 'Pos_X', 'Pos_Y', 'Pos_Z']
         writer = csv.DictWriter(csvfile, fieldsNames)
         writer.writeheader()
@@ -147,7 +198,7 @@ if __name__ == '__main__':
                              'Pos_Y': TSR1Position[i][1], \
                              'Pos_Z': TSR1Position[i][2]})
     
-    with open(filePath + fileName + '_obstacles.csv', 'w') as csvfile:
+    with open(file_dir + file_name + '_obstacles.csv', 'w') as csvfile:
         fieldsNames = ['Time','Obstacle_ID','Obstacle_Type', 'Obstacle_Age', 'Obstacle_Status','Obstacle_X',\
                        'Obstacle_Y','Obstacle_Lane','Obstacle_Width','Obstacle_Length','Obstacle_Brake',\
                        'Obstacle_Vel_X','Obstacle_Accel_X','Obstacle_Angle','Obstacle_Angle_Rate']
@@ -170,7 +221,7 @@ if __name__ == '__main__':
                              'Obstacle_Angle': ObstacleAngle[i], \
                              'Obstacle_Angle_Rate': ObstacleAngleRate[i]})
     
-    with open(filePath + fileName+'_lanes.csv', 'w') as csvfile:
+    with open(file_dir + file_name+'_lanes.csv', 'w') as csvfile:
         fieldsNames = ['Time','Lane_type_right', 'Lane_type_left', 'Lane_conf_right', 'Lane_conf_left', \
                        'Lane_dist_right', 'Lane_dist_left', 'Lane_heading_right', 'Lane_heading_left', \
                        'Lane_curvature_right', 'Lane_curvature_left', 'Lane_curvature', \
@@ -196,7 +247,7 @@ if __name__ == '__main__':
                              'Lane_position_right':RightLanePosition[i], \
                              'Lane_position_left':LeftLanePosition[i]})
                              
-    with open(filePath + fileName + '_carSignalFromMobileye.csv', 'w') as csvfile:
+    with open(file_dir + file_name + '_carSignalFromMobileye.csv', 'w') as csvfile:
         fieldsNames = ['Time','Speeds', 'Yaw', 'Pitch', 'Brakes', 'Wippers', 'HighBeam', 'LowBeam','RightBlink','LeftBlink']
         writer = csv.DictWriter(csvfile, fieldsNames)
         writer.writeheader()
