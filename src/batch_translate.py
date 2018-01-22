@@ -47,6 +47,10 @@ def logReader(filedir, filename):
                     break
                 #j += 5
             if j == 27: # save the message size
+                print ('====================')
+                print (i)
+                print (line)
+                print (line[27])
                 tmpDataDigits = str(int(line[27])-1)
             if j >= 29: # save the data bytes
                 if line[j] != ' ' and line[j] != '\n':

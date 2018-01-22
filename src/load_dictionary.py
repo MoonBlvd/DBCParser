@@ -13,7 +13,7 @@ def load_dictionary(file_name):
 if __name__ == '__main__':
     file_dir = sys.argv[1]
     file_name = sys.argv[2]
-    file_dir = '../translacted_data/' + file_dir + '/' 
+    file_dir = '../translated_data/' + file_dir + '/' 
     data = load_dictionary(file_dir + file_name + '.pkl')
     lenData =  len(data)
     vehicleSpeed = []
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     Beams = []
     Wippers = []
 
-    warning_time = []
+    Warning_time = []
     FCW = []
     LLDW = []
     RLDW = []
@@ -79,6 +79,13 @@ if __name__ == '__main__':
     Maintenance = []
     LanesOff = []
     HeadwayValid = []
+
+    FailSafeType = []
+    Close_car = []
+    Right_cut_in = []
+    Left_cut_in = []
+    Go = []
+
     for i in range(lenData):
         if data[i]['msgID'] == 464:
             vehicleSpeed.append(data[i]['VehicleSpeed'])
@@ -92,7 +99,7 @@ if __name__ == '__main__':
             time380.append(data[i]['Time'])
         # Mobileye warnings
         if data[i]['msgID'] == 1792:
-            warning_time.append(data[i]['Time'])
+            Warning_time.append(data[i]['Time'])
             FCW.append(data[i]['FCW_on'])
             LLDW.append(data[i]['LLDW_on'])
             RLDW.append(data[i]['RLDW_on'])
@@ -106,6 +113,14 @@ if __name__ == '__main__':
             HeadwayW.append(data[i]['HW_Warning_level'])
             Maintenance.append(data[i]['Maintenance'])
             LanesOff.append(data[i]['LDW_off'])
+        # obs_status
+        if data[i]['msgID'] == 1848:
+            FailSafeType.append(data[i]['Failsafe'])
+            Close_car.append(data[i]['Close_car'])
+            Right_cut_in.append(data[i]['Right_close_rang_cut_in'])
+            Left_cut_in.append(data[i]['Left_close_rang_cut_in'])
+            Go.append(data[i]['GO'])
+
         # Traffic Signs
         if data[i]['msgID'] in TSRList:
             TSR1Position.append(np.array([ \
@@ -169,24 +184,33 @@ if __name__ == '__main__':
     
     # save type and position and time of trafficsign_1
     with open(file_dir + file_name + '_Warnings.csv', 'w') as csvfile:
-        fieldsNames = ['Time','FCW','LLDW','RLDW','FailSafe','PedFCW','LCrossing','RCrossing',
-                             'HeadwayWarning','HeadwayMeasure','HeadwayValid','Maintenance','LanesOff']
+        fieldsNames = ['Time','FCW','LLDW','RLDW',
+                       'FailSafe','FailSafeType',
+                       'PedFCW','LCrossing','RCrossing',
+                       'LCutIn','RCutIn','CloseCar',
+                       'HeadwayWarning','HeadwayMeasure',
+                       'HeadwayValid','Maintenance','LanesOff','Go']
         writer = csv.DictWriter(csvfile, fieldsNames)
         writer.writeheader()
-        for i in range(len(warning_time)):
-            writer.writerow({'Time': warning_time[i], \
+        for i in range(len(Warning_time)):
+            writer.writerow({'Time': Warning_time[i], \
                              'FCW': FCW[i], \
                              'LLDW': LLDW[i], \
                              'RLDW': RLDW[i], \
                              'FailSafe': FailSafe[i], \
+                             'FailSafeType': FailSafeType[i], \
                              'PedFCW': PedFCW[i], \
                              'LCrossing': LCrossing[i], \
                              'RCrossing': RCrossing[i], \
+                             'LCutIn': Left_cut_in[i],\
+                             'RCutIn': Right_cut_in[i],\
+                             'CloseCar': Close_car[i],\
                              'HeadwayWarning': HeadwayW[i], \
                              'HeadwayMeasure': Headway[i], \
                              'HeadwayValid': HeadwayValid[i], \
                              'Maintenance': Maintenance[i], \
-                             'LanesOff': LanesOff[i]})
+                             'LanesOff': LanesOff[i], \
+                             'Go': Go[i]})
     with open(file_dir + file_name + '_TSR_1.csv', 'w') as csvfile:
         fieldsNames = ['Time','TSR type', 'Pos_X', 'Pos_Y', 'Pos_Z']
         writer = csv.DictWriter(csvfile, fieldsNames)
